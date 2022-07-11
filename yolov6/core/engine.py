@@ -88,7 +88,7 @@ class Trainer:
             self.prepare_for_steps()
             for self.step, self.batch_data in self.pbar:
                 self.train_in_steps()
-                self.print_details()
+                # self.print_details()
         except Exception as _:
             LOGGER.error('ERROR in training steps.')
             raise
@@ -110,6 +110,7 @@ class Trainer:
         # backward
         self.scaler.scale(total_loss).backward()
         self.loss_items = loss_items
+        self.total_loss = total_loss
         self.update_optimizer()
 
     def eval_and_save(self):

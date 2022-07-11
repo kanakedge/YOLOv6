@@ -1,3 +1,4 @@
+artifacts/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -6,6 +7,8 @@ __pycache__/
 
 # C extensions
 
+# compressed files
+*.zip
 # Distribution / packaging
 .Python
 build/
