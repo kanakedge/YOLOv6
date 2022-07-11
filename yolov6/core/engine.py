@@ -41,6 +41,8 @@ class Trainer:
         self.data_dict = load_yaml(args.data_path)
         self.num_classes = self.data_dict['nc']
         self.train_loader, self.val_loader = self.get_data_loader(args, cfg, self.data_dict)
+        self.len_train, self.len_valid = len(self.train_loader[1]), len(self.val_loader[1]) 
+        self.train_loader, self.val_loader = self.train_loader[0], self.val_loader[0]
         # get model and optimizer
         model = self.get_model(args, cfg, self.num_classes, device)
         self.optimizer = self.get_optimizer(args, cfg, model)
@@ -219,14 +221,14 @@ class Trainer:
         train_loader = create_dataloader(train_path, args.img_size, args.batch_size // args.world_size, grid_size,
                                          hyp=dict(cfg.data_aug), augment=True, rect=False, rank=args.local_rank,
                                          workers=args.workers, shuffle=True, check_images=args.check_images,
-                                         check_labels=args.check_labels, data_dict=data_dict, task='train')[0]
+                                         check_labels=args.check_labels, data_dict=data_dict, task='train')
         # create val dataloader
         val_loader = None
         if args.rank in [-1, 0]:
             val_loader = create_dataloader(val_path, args.img_size, args.batch_size // args.world_size * 2, grid_size,
                                            hyp=dict(cfg.data_aug), rect=True, rank=-1, pad=0.5,
                                            workers=args.workers, check_images=args.check_images,
-                                           check_labels=args.check_labels, data_dict=data_dict, task='val')[0]
+                                           check_labels=args.check_labels, data_dict=data_dict, task='val')
 
         return train_loader, val_loader
 

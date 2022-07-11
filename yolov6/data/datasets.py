@@ -54,6 +54,7 @@ class TrainValDataset(Dataset):
         data_dict=None,
         task="train",
     ):
+        self.img_size = img_size
         assert task.lower() in ("train", "val", "speed"), f"Not supported task: {task}"
         t1 = time.time()
         self.__dict__.update(locals())
@@ -177,7 +178,12 @@ class TrainValDataset(Dataset):
         assert im is not None, f"Image Not Found {path}, workdir: {os.getcwd()}"
 
         h0, w0 = im.shape[:2]  # origin shape
+        # print("Shape",self.img_size)
+        # print(max(h0, w0))
+        if isinstance(self.img_size, list) :
+            self.img_size = self.img_size[0]
         r = self.img_size / max(h0, w0)
+
         if r != 1:
             im = cv2.resize(
                 im,
