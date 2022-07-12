@@ -1,0 +1,5 @@
+artifacts/
+weights/
+*.zip
+./dataset.csv
+./metrics.csv

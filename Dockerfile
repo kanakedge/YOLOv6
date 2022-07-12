@@ -9,16 +9,16 @@ RUN mkdir -p /home/
 RUN mkdir -p /home/en_yolov6
 RUN mkdir -p /home/en_yolov6/YOLOv6
 
-COPY ./* /home/en_yolov6/YOLOv6
-# RUN git clone https://github.com/kanakedge/YOLOv6.git /usr/src/YOLOv6 
 RUN python3 --version
 RUN pip --version
 RUN pip install --upgrade pip
 RUN python3 -m pip install boto3 botocore
 RUN python3 -m pip uninstall -y torch torchvision torchtext Pillow
-RUN python3 -m pip install --no-cache -r /usr/src/YOLOv6/requirements.txt
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
+
+COPY . /home/en_yolov6/YOLOv6/
+# RUN mkdir -p /usr/src/app
+RUN python3 -m pip install --no-cache -r /home/en_yolov6/YOLOv6/requirements.txt
+# WORKDIR /usr/src/app
 # COPY . /usr/src/app
 
 

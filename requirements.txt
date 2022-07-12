@@ -4,8 +4,8 @@
 torch>=1.8.0,!= 1.12.0 #onnx with torch version 1.12.0 not exports to tensorrt (trtexec)
 torchvision>=0.9.0
 numpy>=1.18.5
-opencv-python>=4.1.2
-opencv-python-headless<4.3
+opencv-python>=4.6.0.66
+opencv-python-headless==4.5.2.52
 PyYAML>=5.3.1
 scipy>=1.4.1
 tqdm>=4.41.0

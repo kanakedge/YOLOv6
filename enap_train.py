@@ -2,7 +2,6 @@ import argparse
 import json
 from logging import Logger
 import os
-from typing import DefaultDict
 from urllib import response
 import yaml
 import os.path as osp
@@ -12,7 +11,6 @@ import torch.distributed as dist
 import sys, shutil
 import pprint
 import csv
-import requests
 
 # sys.path.append
 from yolov6.core.engine import Trainer
@@ -22,90 +20,51 @@ from yolov6.utils.envs import get_envs, select_device, set_random_seed
 from yolov6.utils.general import increment_name, find_latest_checkpoint
 
 from aws_utils import aws_util
-
-def make_artifacts(config):
-    os.makedirs('./artifacts', exist_ok=True)
-    shutil.copy(config.conf_file, './artifacts')
-    shutil.copy('./dataset.csv','./artifacts')
-    shutil.copy('./metrics.csv','./artifacts')
-    shutil.copy('./artifacts/weights/best_ckpt.pt','./artifacts/final_model.pt')
-
-    shutil.make_archive('artifacts','zip','./artifacts')
-    shutil.copy('./artifacts.zip','./artifacts')
-
-
-class Dict2Class(object):
-    def __init__(self, my_dict):
-        for key in my_dict:
-            setattr(self, key, my_dict[key])    
+from enap_utils import make_artifacts, get_modelconfig, metric_logging, dataset_logging, Dict2Class
 
 default_args = {"eval_interval":20, "eval_final_only":False,
                  "heavy_eval_range":50, "check_images":True,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
                  "gpu_count":0, "local_rank":-1, "resume":False, "workers":8,
-                 "rank":-1, "world_size":1,
-                 }
+                 "rank":-1, "world_size":1, "output_dir":"./artifacts",
+                 "save_dir":"./artifacts", "data_path": "../data.yaml",
+                 "resume":False
+                }
 
-
-def metric_logging(UPDATE_STATUS_URL, SESSION_ID, metrics_file, epoch):
-    update_post_params = dict()
-    update_post_params["status_code"] = 200
-    update_post_params["error"] = ""
-    update_post_params["status"] = "In Progress"
-    update_post_params["epochs"] = epoch
-    update_post_params["sessionid"] = SESSION_ID
-    metrics_csv_file = [('metrics.csv', open(metrics_file,'rb'))]
-    headers = {}
-    print("Metrics CSV response====================================")
-    response = requests.request("POST", UPDATE_STATUS_URL, headers=headers, data=update_post_params , files=metrics_csv_file)
-    print(response.content)
-    print("========================================================")
-
+WORK_DIR = "./"
 torch.backends.cudnn.benchmark = True
 
+# Load train_params.json config
 train_params_path = os.environ.get("TRAIN_PARAMS_LOC","./train_params.json")
 args = json.loads(open(train_params_path, 'r').read())
+args = args['config_json']
+
+# extend the loaded json to default values
 args.update(default_args)
+
+
+# select and load model config
+args["conf_file"] = get_modelconfig(WORK_DIR, args['modelname'])
 cfg = Config.fromfile(args["conf_file"])
+
+
 device = select_device(args['device'])
-args_class = Dict2Class(args) # loading the args dict into class
+
+# loading the args dict into class
+args_class = Dict2Class(args) 
 
 SESSION_ID = args["sessionid"]
 UPDATE_DATASET_URL = args["UPDATE_DATASET_URL"]
 UPDATE_STATUS_URL = args["UPDATE_STATUS_URL"]
-WORK_DIR = "./"
 
-# Calling Trainer Class -----
+# Calling Trainer Class for model and dataset loading-----
 trainer = Trainer(args_class, cfg, device)
 
-# ----- writing dataset.csv before training starts ------
-dataset_dict = {"train_set_size":trainer.len_train, "val_set_size":trainer.len_valid,
-                 "total_classes":trainer.data_dict['nc']}
-
-with open('dataset.csv', 'w') as f:
-    w = csv.DictWriter(f, dataset_dict.keys())
-    w.writeheader()
-    w.writerow(dataset_dict)
-print("---- dataset.csv written ----")
-# ---- dataset.csv written ----
-
-# POST dataset.csv
-dataset_csv_file = [('dataset.csv', open(os.path.join(WORK_DIR,'dataset.csv'),'rb'))]
-
-update_post_params = dict()
-update_post_params['sessionid'] = SESSION_ID
-update_post_params['status'] = "In Progress"
-
-headers = {}
-response = requests.request(
-    "POST", UPDATE_DATASET_URL, headers=headers, data=update_post_params, files=dataset_csv_file
-)
-print("dataset.csv request==========================================")
-print(response.content)
-print("=============================================================")
-# ------------------------------Posted-------------------------------
-
-
+print("-------------------------writing dataset.csv before training starts-------------------------")
+dataset_csv = os.path.join(WORK_DIR, "dataset.csv")
+dataset_response = dataset_logging(trainer, UPDATE_DATASET_URL, SESSION_ID, dataset_csv)
+print(dataset_response)
+print("-----------------------------dataset.csv pused to the endpoint------------------------------")
 
 # Training and Metrics
 with open('./metrics.csv', 'w') as f:
