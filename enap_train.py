@@ -1,15 +1,10 @@
-import argparse
 import json
 from logging import Logger
 import os
 from urllib import response
-import yaml
 import os.path as osp
-from pathlib import Path
 import torch
 import torch.distributed as dist
-import sys, shutil
-import pprint
 import csv
 
 # sys.path.append
@@ -27,8 +22,7 @@ default_args = {"eval_interval":20, "eval_final_only":False,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
                  "gpu_count":0, "local_rank":-1, "resume":False, "workers":8,
                  "rank":-1, "world_size":1, "output_dir":"./artifacts",
-                 "save_dir":"./artifacts", "data_path": "../data.yaml",
-                 "resume":False
+                 "save_dir":"./runs", "data_path": "../data.yaml"
                 }
 
 WORK_DIR = "./"

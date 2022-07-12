@@ -1,2 +1,0 @@
-epoch,loss,IOU_loss,l1_loss,obj_loss,cls_loss,bbox_mAP_0.5,bbox_mAP_0.50_0.95
-0,42.06230926513672,4.886134,3.899627,32.605534,0.67101294,0.0,0.0

@@ -1,4 +1,6 @@
 artifacts/
+metrics.csv
+dataset.csv
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -105,6 +107,7 @@ venv.bak/
 
 # Pytorch
 *.pth
+*.pt
 
 #vscode
 .vscode/*

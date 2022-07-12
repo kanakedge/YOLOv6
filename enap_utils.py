@@ -5,12 +5,12 @@ import csv
 def make_artifacts(config):
     os.makedirs('./artifacts', exist_ok=True)
     shutil.copy(config.conf_file, './artifacts')
-    shutil.copy('./dataset.csv','./artifacts')
-    shutil.copy('./metrics.csv','./artifacts')
-    shutil.copy('./artifacts/weights/best_ckpt.pt','./artifacts/final_model.pt')
+    shutil.move('./dataset.csv','./artifacts')
+    shutil.move('./metrics.csv','./artifacts')
+    shutil.copy('./runs/weights/best_ckpt.pt','./artifacts/final_model.pt')
 
     shutil.make_archive('artifacts','zip','./artifacts')
-    shutil.copy('./artifacts.zip','./artifacts')
+    shutil.move('./artifacts.zip','./artifacts')
 
 
 def get_modelconfig(WORK_DIR, modelname, resume=False):
