@@ -8,7 +8,9 @@
       "device": "0",
       "UPDATE_STATUS_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateTrainingStatus/",
       "UPDATE_DATASET_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateDataset/",
-      "sessionid" : "chida123"
+      "sessionid" : "chida123",
+      "output_dir":"./artifacts",
+      "save_dir":"./artifacts"
 }
 
    

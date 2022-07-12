@@ -25,7 +25,7 @@ def make_artifacts(config):
     shutil.copy('./dataset.csv','./artifacts')
     shutil.copy('./metrics.csv','./artifacts')
     shutil.copy('./artifacts/weights/best_ckpt.pt','./artifacts/final_model.pt')
-    
+
     shutil.make_archive('artifacts','zip','./artifacts')
     shutil.copy('./artifacts.zip','./artifacts')
 
@@ -39,8 +39,8 @@ default_args = {"eval_interval":20, "eval_final_only":False,
                  "heavy_eval_range":50, "check_images":True,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
                  "gpu_count":0, "local_rank":-1, "resume":False, "workers":8,
-                 "rank":-1, "world_size":1, "save_dir":'./artifacts',
-                 "output_dir":'./artifacts'}
+                 "rank":-1, "world_size":1,
+                 }
 
 torch.backends.cudnn.benchmark = True
 
