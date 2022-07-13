@@ -18,8 +18,6 @@ COPY ./requirements.txt /home/en_yolov6/YOLOv6/
 RUN python3 -m pip install --no-cache -r /home/en_yolov6/YOLOv6/requirements.txt
 RUN python3 -m pip install opencv-python-headless==4.5.5.64
 
-COPY . /home/en_yolov6/YOLOv6/
-COPY ./enap_train.py /home/en_yolov6/YOLOv6/
-COPY ./run.sh /home/en_yolov6/YOLOv6/
 WORKDIR /home/en_yolov6/YOLOv6
 ENTRYPOINT [ "bash","run.sh" ]
+COPY . /home/en_yolov6/YOLOv6/

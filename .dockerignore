@@ -1,6 +1,9 @@
 artifacts/
 weights/
 runs/
+data/
+docs/
+.gitignore
 docker_run.sh
 *.zip
 *.csv
