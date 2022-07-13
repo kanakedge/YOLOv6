@@ -14,11 +14,15 @@ RUN pip --version
 RUN pip install --upgrade pip
 RUN python3 -m pip install boto3 botocore
 RUN python3 -m pip uninstall -y torch torchvision torchtext Pillow
+COPY ./requirements.txt /home/en_yolov6/YOLOv6/
+RUN python3 -m pip install --no-cache -r /home/en_yolov6/YOLOv6/requirements.txt
+RUN python3 -m pip install opencv-python-headless==4.5.5.64
 
 COPY . /home/en_yolov6/YOLOv6/
-# RUN mkdir -p /usr/src/app
-RUN python3 -m pip install --no-cache -r /home/en_yolov6/YOLOv6/requirements.txt
-# WORKDIR /usr/src/app
+COPY ./enap_train.py /home/en_yolov6/YOLOv6/
+COPY ./run.sh /home/en_yolov6/YOLOv6/
+WORKDIR /home/en_yolov6/YOLOv6
+ENTRYPOINT [ "bash","run.sh" ]
 # COPY . /usr/src/app
 
 

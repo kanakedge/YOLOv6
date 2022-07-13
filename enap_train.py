@@ -22,7 +22,7 @@ default_args = {"eval_interval":20, "eval_final_only":False,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
                  "gpu_count":0, "local_rank":-1, "resume":False, "workers":8,
                  "rank":-1, "world_size":1, "output_dir":"./artifacts",
-                 "save_dir":"./runs", "data_path": "../data.yaml"
+                 "save_dir":"./runs", "data_path": "./data.yaml"
                 }
 
 WORK_DIR = "./"
@@ -30,6 +30,7 @@ torch.backends.cudnn.benchmark = True
 
 # Load train_params.json config
 train_params_path = os.environ.get("TRAIN_PARAMS_LOC","./train_params.json")
+print(train_params_path)
 args = json.loads(open(train_params_path, 'r').read())
 args = args['config_json']
 
@@ -84,7 +85,8 @@ with open('./metrics.csv', 'w') as f:
             w.writerow(loss)
             losses.append(loss)
             
-            metric_logging(UPDATE_STATUS_URL, SESSION_ID, "./metrics.csv", trainer.epoch)
+            metric_response = metric_logging(UPDATE_STATUS_URL, SESSION_ID, "./metrics.csv", trainer.epoch)
+            print(metric_response)
             
     except Exception as _:
         LOGGER.error('ERROR in training loop or eval/save model.')
@@ -94,13 +96,14 @@ with open('./metrics.csv', 'w') as f:
 
 make_artifacts(args_class)
 
-# try:
-#     aws_U = aws_util()
-#     aws_U.upload_file(
-#         WORK_DIR+'.zip',
-#         'enap-train-data',
-#         SESSION_ID+"/artifacts.zip"
-#         )
-#     os.system('rm {}.zip'.format(WORK_DIR))
-# except Exception as e:
-#     print(e)
+try:
+    artifacts_zip = os.path.join(args.get('output_dir'), "artifacts.zip")
+    aws_U = aws_util()
+    aws_U.upload_file(
+        artifacts_zip,
+        'enap-train-data',
+        SESSION_ID+"/artifacts.zip"
+        )
+    os.system('rm {}.zip'.format(WORK_DIR))
+except Exception as e:
+    print(e)

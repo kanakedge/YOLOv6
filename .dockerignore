@@ -1,5 +1,7 @@
 artifacts/
 weights/
+runs/
+docker_run.sh
 *.zip
 *.csv
 *.pt
