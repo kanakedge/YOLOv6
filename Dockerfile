@@ -23,6 +23,3 @@ COPY ./enap_train.py /home/en_yolov6/YOLOv6/
 COPY ./run.sh /home/en_yolov6/YOLOv6/
 WORKDIR /home/en_yolov6/YOLOv6
 ENTRYPOINT [ "bash","run.sh" ]
-# COPY . /usr/src/app
-
-
