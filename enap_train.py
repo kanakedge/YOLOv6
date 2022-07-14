@@ -22,6 +22,11 @@ from enap_utils import make_artifacts, get_modelconfig, metric_logging, dataset_
 
 logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
 
+def append_metrics(metrics_csv, row, mode='a'):
+        with open(metrics_csv, mode) as f:
+            w = csv.writer(f)
+            w.writerow(row)
+
 default_args = {"eval_interval":20, "eval_final_only":False,
                  "heavy_eval_range":50, "check_images":True,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
@@ -50,11 +55,11 @@ except Exception as _:
 
 # extend the loaded json to default values
 args.update(default_args)
-args['img_size'] = args['img-size']
+args['img_size'] = args.get('img-size', args['img_size'])
 print(args.keys())
 
 # select and load model config
-args["conf_file"] = get_modelconfig(WORK_DIR, args['modelname'])
+args["conf_file"] = get_modelconfig(WORK_DIR, args['modelname'], args['resume'])
 cfg = Config.fromfile(args["conf_file"])
 
 
@@ -79,37 +84,42 @@ def main():
     print("-----------------------------dataset.csv pused to the endpoint------------------------------")
 
     # Training and Metrics
-    with open('./metrics.csv', 'w') as f:
-        w = csv.writer(f)
-        losses = []
-        columns = ["epoch", "loss", "IOU_loss", "l1_loss", "obj_loss", "cls_loss", "bbox_mAP_0.5", "bbox_mAP_0.50_0.95"]
-        w.writerow(columns)
-        losses.append(columns)
+    columns = ["Epoch", "train_total_loss", "train_box_loss", "train_l1_loss", "train_obj_loss", "train_cls_loss", "mAP@.5", "mAP@.5:.95"]
+    losses = []
+    losses.append(columns)
+    
+    metrics_csv = "./metrics.csv"
 
-        try:
-            trainer.train_before_loop()
-            for trainer.epoch in range(trainer.start_epoch, trainer.max_epoch):
-                trainer.train_in_loop()
-                
-                trainer_loss_items = trainer.loss_items
-                trainer_loss_items = trainer_loss_items.cpu().numpy()
-                total_loss = float(trainer.total_loss.detach().cpu().numpy())
-                evaluation_results = trainer.evaluate_results
-                
-                loss = [trainer.epoch, total_loss]
-                loss.extend(trainer_loss_items)
-                loss.extend(evaluation_results)
-                w.writerow(loss)
-                losses.append(loss)
-                
-                metric_response = metric_logging(UPDATE_STATUS_URL, SESSION_ID, "./metrics.csv", trainer.epoch)
-                print(metric_response)
-                
-        except Exception as _:
-            LOGGER.error('ERROR in training loop or eval/save model.')
-            raise
-        finally:
-            trainer.train_after_loop()
+    # with open('./metrics.csv', 'w') as f:
+    #     w = csv.writer(f)
+    #     #train_box_loss is IOU
+    #     w.writerow(columns)
+    
+    append_metrics(metrics_csv, columns, 'w')
+
+    try:
+        trainer.train_before_loop()
+        for trainer.epoch in range(trainer.start_epoch, trainer.max_epoch):
+            trainer.train_in_loop()
+            
+            trainer_loss_items = trainer.loss_items
+            trainer_loss_items = trainer_loss_items.cpu().numpy()
+            total_loss = float(trainer.total_loss.detach().cpu().numpy())
+            evaluation_results = trainer.evaluate_results
+            
+            loss = [trainer.epoch, total_loss]
+            loss.extend(trainer_loss_items)
+            loss.extend(evaluation_results)
+            losses.append(loss)
+            append_metrics(metrics_csv, loss)
+            metric_response = metric_logging(UPDATE_STATUS_URL, SESSION_ID, "./metrics.csv", trainer.epoch)
+            print(metric_response)
+            
+    except Exception as _:
+        LOGGER.error('ERROR in training loop or eval/save model.')
+        raise
+    finally:
+        trainer.train_after_loop()
 
     make_artifacts(args_class)
 

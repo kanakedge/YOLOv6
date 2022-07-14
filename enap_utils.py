@@ -45,18 +45,18 @@ def dataset_logging(trainer, UPDATE_DATASET_URL, SESSION_ID, dataset_csv):
         w.writeheader()
         w.writerow(dataset_dict)
 
-        # POST dataset.csv
-        dataset_csv_file = [('dataset.csv', open(dataset_csv,'rb'))]
+    # POST dataset.csv
+    dataset_csv_file = [('dataset.csv', open(dataset_csv,'rb'))]
 
-        update_post_params = dict()
-        update_post_params['sessionid'] = SESSION_ID
-        update_post_params['status'] = "In Progress"
+    update_post_params = dict()
+    update_post_params['sessionid'] = SESSION_ID
+    update_post_params['status'] = "In Progress"
 
-        headers = {}
-        response = requests.request(
-            "POST", UPDATE_DATASET_URL, headers=headers, data=update_post_params, files=dataset_csv_file
-        )
-        return response.content
+    headers = {}
+    response = requests.request(
+        "POST", UPDATE_DATASET_URL, headers=headers, data=update_post_params, files=dataset_csv_file
+    )
+    return response.content
 
 
 class Dict2Class(object):

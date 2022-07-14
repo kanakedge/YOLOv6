@@ -1,9 +1,9 @@
 {
       "config_json" : {
-            "modelname": "yolov6s",
+            "modelname": "yolov6n",
             "img_size": [640,640],
             "batch_size": 32,
-            "epochs":1,
+            "epochs":15,
             "device": "0",
             "UPDATE_STATUS_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateTrainingStatus/",
             "UPDATE_DATASET_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateDataset/",
