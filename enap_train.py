@@ -34,7 +34,6 @@ default_args = {"eval_interval":20, "eval_final_only":False,
                  "rank":-1, "world_size":1, "output_dir":"./artifacts",
                  "save_dir":"./runs", "data_path": "./data.yaml", "img_size": [640,640]
                 }
-print(default_args, type(default_args))
 
 WORK_DIR = "./"
 torch.backends.cudnn.benchmark = True
@@ -48,7 +47,6 @@ try:
     args = args['config_json']
     if isinstance(args, str):
         args = json.loads(args)
-    print(args) 
 except Exception as _:
     logging.debug("Error while json.loads(args)")
     raise
@@ -56,17 +54,16 @@ except Exception as _:
 # extend the loaded json to default values
 args.update(default_args)
 args['img_size'] = args.get('img-size', args['img_size'])
-print(args.keys())
 
 # select and load model config
 args["conf_file"] = get_modelconfig(WORK_DIR, args['modelname'], args['resume'])
 cfg = Config.fromfile(args["conf_file"])
 
-
 device = select_device(args['device'])
 
 # loading the args dict into class
 args_class = Dict2Class(args) 
+print(args)
 
 SESSION_ID = args["sessionid"]
 UPDATE_DATASET_URL = args["UPDATE_DATASET_URL"]
