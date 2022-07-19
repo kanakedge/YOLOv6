@@ -4,6 +4,7 @@ runs/
 data/
 docs/
 .gitignore
+export_trtexec.py
 docker_run.sh
 *.zip
 *.csv

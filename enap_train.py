@@ -30,9 +30,9 @@ def append_metrics(metrics_csv, row, mode='a'):
 default_args = {"eval_interval":20, "eval_final_only":False,
                  "heavy_eval_range":50, "check_images":True,
                  "check_labels":True, "name":"exp", "dist_url":"env://",
-                 "gpu_count":0, "local_rank":-1, "resume":False, "workers":8,
+                 "gpu_count":0, "local_rank":-1,
                  "rank":-1, "world_size":1, "output_dir":"./artifacts",
-                 "save_dir":"./runs", "data_path": "./data.yaml", "img_size": [640,640]
+                 "save_dir":"./runs", "data_path": "./data.yaml",
                 }
 
 WORK_DIR = "./"
@@ -54,10 +54,19 @@ except Exception as _:
 # extend the loaded json to default values
 args.update(default_args)
 args['img_size'] = args.get('img-size', args['img_size'])
+args['batch_size'] = int(args['batch_size'])
+args['epochs'] = int(args['epochs'])
+if args["resume"].strip() == "False":
+    args["resume"] = False
+else:
+    args["resume"] = True
+
 
 # select and load model config
+print(f"============= {args['modelname']}============")
 args["conf_file"] = get_modelconfig(WORK_DIR, args['modelname'], args['resume'])
 cfg = Config.fromfile(args["conf_file"])
+print(f"========{args['conf_file']}==========")
 
 device = select_device(args['device'])
 

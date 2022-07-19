@@ -1,3 +1,4 @@
+from distutils.command.config import config
 import os, shutil
 import requests
 import csv
@@ -20,6 +21,9 @@ def get_modelconfig(WORK_DIR, modelname, resume=False):
         "yolov6s": ["yolov6s.py", "yolov6s_finetune.py"],
         "yolov6_tiny": ["yolov6_tiny.py", "yolov6_tiny_finetune.py"]
     }
+    if modelname == "yolov6-tiny":
+        modelname = "yolov6_tiny"
+
     if resume:
         return os.path.join(config_folder, config_dict[modelname][1])
     return os.path.join(config_folder, config_dict[modelname][0])

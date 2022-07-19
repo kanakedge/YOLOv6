@@ -1,13 +1,15 @@
 {
       "config_json" : {
-            "modelname": "yolov6n",
+            "modelname": "yolov6-tiny",
             "img_size": [640,640],
-            "batch_size": 32,
-            "epochs":15,
+            "batch_size": "32",
+            "epochs":"15",
             "device": "0",
             "UPDATE_STATUS_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateTrainingStatus/",
             "UPDATE_DATASET_URL":"https://stage.enap.edgeneural.ai:3200/api/training/updateDataset/",
-            "sessionid" : "chida123"
+            "sessionid" : "chida123",
+            "workers": 8,
+            "resume": "False"
       }
 }
 
