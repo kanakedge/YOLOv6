@@ -1,7 +1,7 @@
 {
       "config_json" : {
             "modelname": "yolov6-tiny",
-            "img_size": [640,640],
+            "img-size": [640,640],
             "batch_size": "32",
             "epochs":"15",
             "device": "0",

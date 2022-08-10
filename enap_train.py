@@ -53,7 +53,7 @@ except Exception as _:
 
 # extend the loaded json to default values
 args.update(default_args)
-args['img_size'] = args.get('img-size', args['img_size'])
+args['img_size'] = args.get('img-size')
 args['batch_size'] = int(args['batch_size'])
 args['epochs'] = int(args['epochs'])
 if args["resume"].strip() == "False":
@@ -164,5 +164,5 @@ if __name__=="__main__":
         print("Error!!!=================")
         print(e)
         print(traceback.format_exc())
-    response = requests.request("POST",UPDATE_STATUS_URL,headers={},json=train_response_params)
+    response = requests.request("POST", UPDATE_STATUS_URL, headers={}, json=train_response_params)
     print(response.content)
